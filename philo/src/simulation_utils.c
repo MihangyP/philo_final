@@ -20,10 +20,10 @@ void	wait_all_threads(t_program *program)
 
 void	de_synchronise_philos(t_philo *philo)
 {
-	if (philo->program->philo_nbr % 2 == 0)
+	if (philo->program->n_philo % 2 == 0)
 	{
 		if (philo->id % 2 == 0)
-			precise_usleep(3e4, philo->program);		
+			my_usleep(3e4, philo->program);		
 	}
 	else
 	{
@@ -37,14 +37,19 @@ bool	simulation_finished(t_program *program)
 	return (get_bool(&program->program_mutex, &program->end_simulation));
 }
 
-bool	all_threads_running(pthread_mutex_t *mutex, long *threads, long philo_nbr)
+bool	all_threads_running(pthread_mutex_t *mutex, long *threads, long n_philo)
 {
 	bool	ret;
+	int		status;
 
 	ret = false;
-	safe_mutex_handle(mutex, LOCK);
-	if (*threads == philo_nbr)
+	status = pthread_mutex_lock(mutex);
+	if (status != 0)
+		print_error_and_exit("cannot lock mutex");	
+	if (*threads == n_philo)
 		ret = true;
-	safe_mutex_handle(mutex, UNLOCK);
+	status = pthread_mutex_unlock(mutex);
+	if (status != 0)
+		print_error_and_exit("cannot unlock mutex");
 	return (ret);
 }

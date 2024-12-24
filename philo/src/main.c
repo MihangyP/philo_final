@@ -14,33 +14,15 @@
 
 void	increase_long(pthread_mutex_t *mutex, long *value)
 {
-	safe_mutex_handle(mutex, LOCK);
+	int	state;
+
+	state = pthread_mutex_lock(mutex);
+	if (state != 0)
+		print_error_and_exit("cannot lock mutex");
 	(*value)++;
-	safe_mutex_handle(mutex, UNLOCK);
-}
-
-void	precise_usleep(long usec, t_program *program)
-{
-	long	start;
-	long	elapsed;
-	long	rem;
-
-	start = gettime('m');
-	while (gettime('m') - start < usec)
-	{
-		if (simulation_finished(program))
-			break ;
-		elapsed = gettime('m') - start;
-		rem = usec - elapsed;
-
-		if (rem > 1e3)
-			usleep(rem / 2);
-		else
-		{
-			while (gettime('m') - start < usec)
-				;
-		}
-	}
+	state = pthread_mutex_unlock(mutex);
+	if (state != 0)
+		print_error_and_exit("cannot unlock mutex");
 }
 
 bool	philo_died(t_philo *philo)
@@ -51,7 +33,7 @@ bool	philo_died(t_philo *philo)
 	if (get_bool(&philo->philo_mutex, &philo->full))
 		return (false);
 	elapsed = gettime('M') - get_long(&philo->philo_mutex, &philo->last_meal_time);
-	t_to_die = philo->program->time_to_die / 1e3;
+	t_to_die = philo->program->t_die / 1e3;
 	if (elapsed > t_to_die)
 		return (true);
 	return (false);
@@ -61,7 +43,7 @@ void	run(t_program *program, char **av)
 {
 	extract_data(program, av);
 	data_init(program);
-	dinner_start(program);
+	simulation(program);
 }
 
 int main(int ac, char **av)

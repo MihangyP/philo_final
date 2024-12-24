@@ -14,34 +14,56 @@
 
 void	set_long(pthread_mutex_t *mutex, long *dest, long value)
 {
-	safe_mutex_handle(mutex, LOCK);
+	int	status;
+
+	status = pthread_mutex_lock(mutex);
+	if (status != 0)
+		print_error_and_exit("cannot lock mutex");
 	*dest = value;
-	safe_mutex_handle(mutex, UNLOCK);
+	status = pthread_mutex_unlock(mutex);
+	if (status != 0)
+		print_error_and_exit("cannot unlock mutex");
 }
 
 void	set_bool(pthread_mutex_t *mutex, bool *dest, bool value)
 {
-	safe_mutex_handle(mutex, LOCK);
+	int	status;
+
+	status = pthread_mutex_lock(mutex);
+	if (status != 0)
+		print_error_and_exit("cannot lock mutex");
 	*dest = value;
-	safe_mutex_handle(mutex, UNLOCK);
+	status = pthread_mutex_unlock(mutex);
+	if (status != 0)
+		print_error_and_exit("cannot unlock mutex");
 }
 
 bool	get_bool(pthread_mutex_t *mutex, bool *value)
 {
 	bool	ret;
+	int		status;
 
-	safe_mutex_handle(mutex, LOCK);
+	status = pthread_mutex_lock(mutex);
+	if (status != 0)
+		print_error_and_exit("cannot lock mutex");
 	ret = *value;
-	safe_mutex_handle(mutex, UNLOCK);
+	status = pthread_mutex_unlock(mutex);
+	if (status != 0)
+		print_error_and_exit("cannot unlock mutex");
 	return (ret);
 }
 
 long	get_long(pthread_mutex_t *mutex, long *value)
 {
 	long	ret;
+	int		status;
 
-	safe_mutex_handle(mutex, LOCK);
+	status = pthread_mutex_lock(mutex);
+	if (status != 0)
+		print_error_and_exit("cannot lock mutex");
 	ret = *value;
-	safe_mutex_handle(mutex, UNLOCK);
+	status = pthread_mutex_unlock(mutex);
+	if (status != 0)
+		print_error_and_exit("cannot unlock mutex");
 	return (ret);
 }

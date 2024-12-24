@@ -14,16 +14,24 @@
 
 void	eat(t_philo *philo)
 {
-	safe_mutex_handle(&philo->first_fork->fork, LOCK);
+	int	status;
+
+	status = pthread_mutex_lock(&philo->first_fork->fork);
+	if (status != 0)
+		print_error_and_exit("cannot lock mutex");
 	write_status(TAKE_FIRST_FORK, philo);
-	safe_mutex_handle(&philo->second_fork->fork, LOCK);
+	status = pthread_mutex_lock(&philo->second_fork->fork);
 	write_status(TAKE_SECOND_FORK, philo);
 	set_long(&philo->philo_mutex, &philo->last_meal_time, gettime('M'));
 	philo->meals_counter++;
 	write_status(EATING, philo);
-	precise_usleep(philo->program->time_to_eat, philo->program);
-	if (philo->program->nbr_limit_meals > 0 && philo->meals_counter == philo->program->nbr_limit_meals)
+	my_usleep(philo->program->t_eat, philo->program);
+	if (philo->program->n_meals > 0 && philo->meals_counter == philo->program->n_meals)
 		set_bool(&philo->philo_mutex, &philo->full, true);
-	safe_mutex_handle(&philo->first_fork->fork, UNLOCK);
-	safe_mutex_handle(&philo->second_fork->fork, UNLOCK);
+	status = pthread_mutex_unlock(&philo->first_fork->fork);
+	if (status != 0)
+		print_error_and_exit("cannot unlock mutex");
+	status = pthread_mutex_unlock(&philo->second_fork->fork);
+	if (status != 0)
+		print_error_and_exit("cannot unlock mutex");
 }

@@ -16,15 +16,22 @@ void	free_all(t_program *program)
 {
 	t_philo	*philo;
 	int		i;
+	int		status;
 
 	i = -1;
-	while (++i < program->philo_nbr)
+	while (++i < program->n_philo)
 	{
 		philo = program->philos + i;
-		safe_mutex_handle(&philo->philo_mutex, DESTROY);
+		status = pthread_mutex_destroy(&philo->philo_mutex);
+		if (status != 0)
+			print_error_and_exit("cannot destroy mutex");
 	}
-	safe_mutex_handle(&program->write_mutex, DESTROY);
-	safe_mutex_handle(&program->program_mutex, DESTROY);
+	status = pthread_mutex_destroy(&program->write_mutex);
+	if (status != 0)
+		print_error_and_exit("cannot destroy mutex");
+	status = pthread_mutex_destroy(&program->program_mutex);
+	if (status != 0)
+		print_error_and_exit("cannot destroy mutex");
 	free(program->forks);
 	free(program->philos);
 }

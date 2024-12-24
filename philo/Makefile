@@ -1,5 +1,5 @@
 NAME = philo
-SRC = main.c init.c safe_functions.c error.c utils.c extract_data.c status.c \
+SRC = main.c init.c error.c utils.c extract_data.c status.c \
 		simulation.c simulation_utils.c set_get.c eat.c think.c free.c
 SRC_FILES = $(addprefix src/, $(SRC))
 CC = gcc

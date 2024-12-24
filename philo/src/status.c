@@ -12,15 +12,10 @@
 
 #include <philo.h>
 
-void	write_status(int status, t_philo *philo)
+void	deep_write_status(int status, long elapsed, t_philo *philo)
 {
-	long	elapsed;
-
-	elapsed = gettime('M') - philo->program->start_simulation;
-	if (philo->full)
-		return ;
-	safe_mutex_handle(&philo->program->write_mutex, LOCK);
-	if ((status == TAKE_FIRST_FORK || status == TAKE_SECOND_FORK) && !simulation_finished(philo->program))
+	if ((status == TAKE_FIRST_FORK || status == TAKE_SECOND_FORK) && 
+		!simulation_finished(philo->program))
 		printf("%-6ld %d has taken a fork\n", elapsed, philo->id);
 	else if (status == EATING && !simulation_finished(philo->program))
 		printf("%-6ld %d is eating\n", elapsed, philo->id);
@@ -30,5 +25,21 @@ void	write_status(int status, t_philo *philo)
 		printf("%-6ld %d is thinking\n", elapsed, philo->id);
 	else if (status == DIED)
 		printf("%-6ld %d died\n", elapsed, philo->id);
-	safe_mutex_handle(&philo->program->write_mutex, UNLOCK);
+}
+
+void	write_status(int status, t_philo *philo)
+{
+	long	elapsed;
+	int		s;
+
+	elapsed = gettime('M') - philo->program->start_simulation;
+	if (philo->full)
+		return ;
+	s = pthread_mutex_lock(&philo->program->write_mutex);
+	if (s != 0)
+		print_error_and_exit("cannot lock mutex");
+	deep_write_status(status, elapsed, philo);
+	s = pthread_mutex_unlock(&philo->program->write_mutex);
+	if (s != 0)
+		print_error_and_exit("cannot unlock mutex");
 }

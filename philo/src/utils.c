@@ -68,3 +68,27 @@ long	gettime(char c)
 		print_error_and_exit("Wrong input to gettime !");
 	return (6969);
 }
+
+void	my_usleep(long usec, t_program *program)
+{
+	long	start;
+	long	elapsed;
+	long	rem;
+
+	start = gettime('m');
+	while (gettime('m') - start < usec)
+	{
+		if (simulation_finished(program))
+			break ;
+		elapsed = gettime('m') - start;
+		rem = usec - elapsed;
+
+		if (rem > 1e3)
+			usleep(rem / 2);
+		else
+		{
+			while (gettime('m') - start < usec)
+				;
+		}
+	}
+}

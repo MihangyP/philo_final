@@ -23,17 +23,6 @@
 # include <limits.h>
 # include <errno.h>
 
-enum	e_opcode
-{
-	LOCK = 0,
-	UNLOCK,
-	INIT,
-	DESTROY,
-	CREATE,
-	JOIN,
-	DETACH
-};
-
 enum	e_philo_status
 {
 	TAKE_FIRST_FORK,
@@ -67,11 +56,11 @@ typedef struct	s_philo
 
 struct	s_program
 {
-	long			philo_nbr;
-	long			time_to_die;
-	long			time_to_eat;
-	long			time_to_sleep;
-	long			nbr_limit_meals;
+	long			n_philo;
+	long			t_die;
+	long			t_eat;
+	long			t_sleep;
+	long			n_meals;
 	long			start_simulation;
 	bool			end_simulation;
 	bool			all_threads_ready;
@@ -97,7 +86,7 @@ void	extract_data(t_program *program, char **av);
 void	write_status(int status, t_philo *philo);
 long	gettime(char c);
 bool	simulation_finished(t_program *program);
-void	dinner_start(t_program *program);
+void	simulation(t_program *program);
 
 void	set_long(pthread_mutex_t *mutex, long *dest, long value);
 void	set_bool(pthread_mutex_t *mutex, bool *dest, bool value);
@@ -108,7 +97,7 @@ void	de_synchronise_philos(t_philo *philo);
 void	wait_all_threads(t_program *program);
 void	increase_long(pthread_mutex_t *mutex, long *value);
 void	eat(t_philo *philo);
-void	precise_usleep(long usec, t_program *program);
+void	my_usleep(long usec, t_program *program);
 void	thinking(t_philo *philo, bool pre_simulation);
 bool	all_threads_running(pthread_mutex_t *mutex, long *threads, long philo_nbr);
 bool	philo_died(t_philo *philo);
